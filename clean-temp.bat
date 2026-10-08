@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 title Temp Cleaner - Tyson 2026
 color 0A
 cls
@@ -10,9 +11,6 @@ echo   Tyson 2026
 echo   Discord: t.y.s.o.n1
 echo ============================================
 echo.
-
-REM تشغيل الأغنية بدون فتح برنامج
-powershell -NoProfile -ExecutionPolicy Bypass -Command "[System.Reflection.Assembly]::LoadWithPartialName('presentationCore') | Out-Null; $player = New-Object System.Windows.Media.MediaPlayer; $player.Open([uri]'%~dp0music.mp3'); $player.Play(); Start-Sleep -Seconds 100"
 
 :menu
 echo.
@@ -33,11 +31,11 @@ cls
 echo Cleaning temporary files...
 echo.
 
-for /d %%X in (%TEMP%\*) do @rd /s /q "%%X" 2>nul
-del /q /f /s %TEMP%\*.* 2>nul
+for /d %%X in ("%TEMP%\*") do @rd /s /q "%%X" 2>nul
+del /q /f /s "%TEMP%\*.*" 2>nul
 
-for /d %%X in (%USERPROFILE%\AppData\Local\Temp\*) do @rd /s /q "%%X" 2>nul
-del /q /f /s %USERPROFILE%\AppData\Local\Temp\*.* 2>nul
+for /d %%X in ("%USERPROFILE%\AppData\Local\Temp\*") do @rd /s /q "%%X" 2>nul
+del /q /f /s "%USERPROFILE%\AppData\Local\Temp\*.*" 2>nul
 
 echo.
 echo Done! Press any key to return to menu...
