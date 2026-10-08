@@ -1,170 +1,53 @@
 @echo off
-chcp 65001 >nul
 title Temp Cleaner - Tyson 2026
 color 0A
 cls
 
-REM ==========================================
-REM  Temp Cleaner Tool
-REM  Copyright: Tyson
-REM  Year: 2026
-REM  Discord: t.y.s.o.n1
-REM ==========================================
-
-REM تشغيل اغنية عند فتح البرنامج (اختياري)
-REM قم بحفظ ملف صوتي باسم music.mp3 في نفس مجلد الـ bat
-if exist "%~dp0music.mp3" (
-    start "" "%~dp0music.mp3"
-)
-
 echo.
 echo ============================================
-echo  ^> Temp Cleaner Tool ^<
-echo  Copyright: Tyson
-echo  Year: 2026
-echo  Discord: t.y.s.o.n1
+echo   Temp Cleaner Tool
+echo   Tyson 2026
+echo   Discord: t.y.s.o.n1
 echo ============================================
 echo.
-echo اختر من الخيارات:
-echo.
-echo [1] مسح الملفات المؤقتة
-echo [2] غلق البرنامج
-echo.
 
-set /p choice="ادخل اختيارك (1 او 2): "
-
-if "%choice%"=="1" (
-    call :CleanTemp
-    echo.
-    echo اضغط اي زر للمتابعة...
-    pause >nul
-    cls
-    goto menu
-) else if "%choice%"=="2" (
-    echo.
-    echo شكرا لاستخدام البرنامج!
-    echo.
-    timeout /t 2 >nul
-    exit /b
-) else (
-    cls
-    echo اختيار خاطئ! اكتب 1 أو 2 فقط.
-    echo.
-    timeout /t 2 >nul
-    cls
-    goto menu
-)
+REM تشغيل الأغنية بدون فتح برنامج
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[System.Reflection.Assembly]::LoadWithPartialName('presentationCore') | Out-Null; $player = New-Object System.Windows.Media.MediaPlayer; $player.Open([uri]'%~dp0music.mp3'); $player.Play(); Start-Sleep -Seconds 100"
 
 :menu
-goto start
-
-:start
 echo.
-echo ============================================
-echo  ^> Temp Cleaner Tool ^<
-echo  Copyright: Tyson
-echo  Year: 2026
-echo  Discord: t.y.s.o.n1
-echo ============================================
+echo [1] Clean Temp Files
+echo [2] Exit
 echo.
-echo اختر من الخيارات:
-echo.
-echo [1] مسح الملفات المؤقتة
-echo [2] غلق البرنامج
-echo.
+set /p choice="Enter choice (1 or 2): "
 
-set /p choice="ادخل اختيارك (1 او 2): "
-
-if "%choice%"=="1" (
-    call :CleanTemp
-    echo.
-    echo اضغط اي زر للمتابعة...
-    pause >nul
-    cls
-    goto start
-) else if "%choice%"=="2" (
-    echo.
-    echo شكرا لاستخدام البرنامج!
-    echo.
-    timeout /t 2 >nul
-    exit /b
-) else (
-    cls
-    echo اختيار خاطئ! اكتب 1 أو 2 فقط.
-    echo.
-    timeout /t 2 >nul
-    cls
-    goto start
-)
-
-:CleanTemp
+if "%choice%"=="1" goto clean
+if "%choice%"=="2" goto exit
+echo Invalid choice!
+timeout /t 1 >nul
 cls
-echo.
-echo ============================================
-echo  جاري مسح الملفات المؤقتة...
-echo ============================================
+goto menu
+
+:clean
+cls
+echo Cleaning temporary files...
 echo.
 
-taskkill /f /im explorer.exe >nul 2>&1
+for /d %%X in (%TEMP%\*) do @rd /s /q "%%X" 2>nul
+del /q /f /s %TEMP%\*.* 2>nul
 
-echo [1/8] تنظيف %TEMP%
-attrib -r -a -s -h "%TEMP%\*.*" /s /d >nul 2>&1
-del /f /s /q "%TEMP%\*.*" >nul 2>&1
-for /d %%D in ("%TEMP%\*") do rd /s /q "%%D" >nul 2>&1
-echo ✓ تم
+for /d %%X in (%USERPROFILE%\AppData\Local\Temp\*) do @rd /s /q "%%X" 2>nul
+del /q /f /s %USERPROFILE%\AppData\Local\Temp\*.* 2>nul
 
 echo.
-echo [2/8] تنظيف AppData Temp
-attrib -r -a -s -h "%USERPROFILE%\AppData\Local\Temp\*.*" /s /d >nul 2>&1
-del /f /s /q "%USERPROFILE%\AppData\Local\Temp\*.*" >nul 2>&1
-for /d %%D in ("%USERPROFILE%\AppData\Local\Temp\*") do rd /s /q "%%D" >nul 2>&1
-echo ✓ تم
+echo Done! Press any key to return to menu...
+pause >nul
+cls
+goto menu
 
+:exit
+cls
+echo Thank you for using Temp Cleaner!
 echo.
-echo [3/8] تنظيف INetCache
-attrib -r -a -s -h "%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache\*.*" /s /d >nul 2>&1
-del /f /s /q "%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache\*.*" >nul 2>&1
-for /d %%D in ("%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache\*") do rd /s /q "%%D" >nul 2>&1
-echo ✓ تم
-
-echo.
-echo [4/8] تنظيف Temporary Internet Files
-attrib -r -a -s -h "%USERPROFILE%\AppData\Local\Microsoft\Windows\Temporary Internet Files\*.*" /s /d >nul 2>&1
-del /f /s /q "%USERPROFILE%\AppData\Local\Microsoft\Windows\Temporary Internet Files\*.*" >nul 2>&1
-for /d %%D in ("%USERPROFILE%\AppData\Local\Microsoft\Windows\Temporary Internet Files\*") do rd /s /q "%%D" >nul 2>&1
-echo ✓ تم
-
-echo.
-echo [5/8] تنظيف Windows Temp
-attrib -r -a -s -h "%SystemRoot%\Temp\*.*" /s /d >nul 2>&1
-del /f /s /q "%SystemRoot%\Temp\*.*" >nul 2>&1
-for /d %%D in ("%SystemRoot%\Temp\*") do rd /s /q "%%D" >nul 2>&1
-echo ✓ تم
-
-echo.
-echo [6/8] تنظيف LocalService Temp
-attrib -r -a -s -h "%SystemRoot%\ServiceProfiles\LocalService\AppData\Local\Temp\*.*" /s /d >nul 2>&1
-del /f /s /q "%SystemRoot%\ServiceProfiles\LocalService\AppData\Local\Temp\*.*" >nul 2>&1
-for /d %%D in ("%SystemRoot%\ServiceProfiles\LocalService\AppData\Local\Temp\*") do rd /s /q "%%D" >nul 2>&1
-echo ✓ تم
-
-echo.
-echo [7/8] تنظيف NetworkService Temp
-attrib -r -a -s -h "%SystemRoot%\ServiceProfiles\NetworkService\AppData\Local\Temp\*.*" /s /d >nul 2>&1
-del /f /s /q "%SystemRoot%\ServiceProfiles\NetworkService\AppData\Local\Temp\*.*" >nul 2>&1
-for /d %%D in ("%SystemRoot%\ServiceProfiles\NetworkService\AppData\Local\Temp\*") do rd /s /q "%%D" >nul 2>&1
-echo ✓ تم
-
-echo.
-echo [8/8] إعادة تشغيل Explorer
-start explorer.exe
 timeout /t 2 >nul
-echo ✓ تم
-
-echo.
-echo ============================================
-echo  تم مسح الملفات المؤقتة بنجاح!
-echo ============================================
-echo.
-
-exit /b
+exit
